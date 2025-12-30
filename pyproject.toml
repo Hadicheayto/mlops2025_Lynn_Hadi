@@ -1,10 +1,12 @@
 [project]
 name = "mlproject"
 version = "0.1.0"
-description = "Add your description here"
+description = "NYC Taxi Trip Duration - End-to-End MLOps Project"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "pandas>=2.3.3",
+]
 
 [build-system]
 requires = ["setuptools>=68"]
@@ -15,3 +17,10 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[project.scripts]
+train = "mlproject.pipelines.training_pipeline:run"
+inference = "mlproject.pipelines.inference_pipeline:run"
+
+[tool.uv]
+package = true
