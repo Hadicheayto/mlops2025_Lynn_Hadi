@@ -1,0 +1,29 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environments
+.venv/
+.venv-*/
+
+# Data (DO NOT COMMIT)
+data/
+src/mlproject/data/
+
+# Notebooks outputs (optional)
+notebooks/.ipynb_checkpoints/
+
+# Packaging artifacts
+*.egg-info/
+
+# uv
+uv.lock
+
+# Preprocessed outputs (do not commit)
+src/mlproject/data/processed/
+
+# ignoring hthe ipynb of EDA
+notebooks/EDA.ipynb
