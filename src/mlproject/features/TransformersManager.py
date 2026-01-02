@@ -10,33 +10,40 @@ class TransformersManager:
     def __init__(self):
         self.dv = DictVectorizer(sparse=True)
 
-    def fit(self, df, categorical_cols, numerical_cols):
+    # -----------------------------
+    # Fit AND save in a single step
+    # -----------------------------
+    def fit_and_save(self, df, categorical_cols, numerical_cols, output_dir="src/mlproject/data/transformers"):
+        """
+        Fit the DictVectorizer on df and immediately save it to disk.
+        """
         df = df.copy()
         df[categorical_cols] = df[categorical_cols].astype(str)
 
-        feature_dicts = df[categorical_cols + numerical_cols].to_dict(
-            orient="records"
-        )
+        feature_dicts = df[categorical_cols + numerical_cols].to_dict(orient="records")
+        self.dv.fit(feature_dicts)
 
-        X = self.dv.fit_transform(feature_dicts)
-        return X
-
-    def transform(self, df, categorical_cols, numerical_cols):
-        df = df.copy()
-        df[categorical_cols] = df[categorical_cols].astype(str)
-
-        feature_dicts = df[categorical_cols + numerical_cols].to_dict(
-            orient="records"
-        )
-
-        return self.dv.transform(feature_dicts)
-
-    def save(self, output_dir="src/mlproject/data/transformers"):
+        # Save immediately
         Path(output_dir).mkdir(parents=True, exist_ok=True)
-
         with open(Path(output_dir) / "dict_vectorizer.pkl", "wb") as f:
             pickle.dump(self.dv, f)
 
+        print(f"[INFO] DictVectorizer fitted and saved to {output_dir}")
+
+        return self.dv
+
+    # -----------------------------
+    # Transform using already fitted DV
+    # -----------------------------
+    def transform(self, df, categorical_cols, numerical_cols):
+        df = df.copy()
+        df[categorical_cols] = df[categorical_cols].astype(str)
+        feature_dicts = df[categorical_cols + numerical_cols].to_dict(orient="records")
+        return self.dv.transform(feature_dicts)
+
+    # -----------------------------
+    # Static load method
+    # -----------------------------
     @staticmethod
     def load(path="src/mlproject/data/transformers/dict_vectorizer.pkl"):
         with open(path, "rb") as f:

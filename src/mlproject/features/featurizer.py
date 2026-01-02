@@ -20,7 +20,6 @@ class Featurizer(BaseFeaturesComputer):
             "id",
             "pickup_datetime",
             "dropoff_datetime",
-            "trip_duration",
             "pickup_longitude",
             "pickup_latitude",
             "dropoff_longitude",
