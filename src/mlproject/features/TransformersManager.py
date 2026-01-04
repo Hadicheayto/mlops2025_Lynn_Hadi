@@ -42,6 +42,25 @@ class TransformersManager:
         return self.dv.transform(feature_dicts)
 
     # -----------------------------
+    # Transform taxi data (predefined columns)
+    # -----------------------------
+    def transform_taxi_data(self, df):
+        """
+        Transform taxi trip data using predefined columns.
+        """
+        categorical_cols = ["vendor_id", "store_and_fwd_flag"]
+        numerical_cols = [
+            "passenger_count",
+            "pickup_hour",
+            "pickup_dayofweek",
+            "is_weekend",
+            "trip_distance_km",
+            "manhattan_distance",
+            "is_night",
+        ]
+        return self.transform(df, categorical_cols, numerical_cols)
+
+    # -----------------------------
     # Static load method
     # -----------------------------
     @staticmethod
