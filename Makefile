@@ -13,11 +13,23 @@ EVAL_SPLIT=src/mlproject/data/splits/eval
 
 MODEL_OUTPUT=models/trained_model.pkl
 MODEL_TYPE=xgboost
+OUTPUT_DIR=outputs
 
 # -------------------------
-# Full pipeline
+# Full pipeline (preprocessing + features + training)
 # -------------------------
 all: preprocess features train
+
+
+# -------------------------
+# Complete pipeline (including inference)
+# -------------------------
+full: preprocess features train inference
+
+# -------------------------
+# Complete pipeline with MLflow logging
+# -------------------------
+full-mlflow: preprocess features train-mlflow inference
 
 
 # -------------------------
@@ -53,7 +65,42 @@ train:
 		--model_type $(MODEL_TYPE)
 
 # -------------------------
-# Batch inference (optional)
+# Training with MLflow logging
+# -------------------------
+train-mlflow:
+	python scripts/train.py \
+		--train_dir $(TRAIN_SPLIT) \
+		--eval_dir $(EVAL_SPLIT) \
+		--model_output $(MODEL_OUTPUT) \
+		--model_type $(MODEL_TYPE) \
+		--use_mlflow
+
+# -------------------------
+# Batch inference
 # -------------------------
 inference:
-	python scripts/batch_inference.py
+	python scripts/batch_inference.py \
+		--model_path $(MODEL_OUTPUT) \
+		--test_data $(RAW_TEST) \
+		--output_dir $(OUTPUT_DIR)
+
+# -------------------------
+# Clean generated files
+# -------------------------
+clean:
+	rm -rf outputs/* models/* src/mlproject/data/processed/* src/mlproject/data/splits/* src/mlproject/data/transformers/*
+
+# -------------------------
+# Help
+# -------------------------
+help:
+	@echo "Available targets:"
+	@echo "  all         - Run preprocessing, features, and training"
+	@echo "  full        - Run complete pipeline including inference"
+	@echo "  full-mlflow - Run complete pipeline with MLflow logging"
+	@echo "  preprocess  - Clean and preprocess data"
+	@echo "  features    - Create features and data splits"
+	@echo "  train       - Train the model (no MLflow)"
+	@echo "  train-mlflow- Train the model with MLflow logging"
+	@echo "  inference   - Run batch inference on test data"
+	@echo "  clean       - Remove generated files"

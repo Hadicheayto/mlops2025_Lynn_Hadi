@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from src.mlproject.features.base_featurise import BaseFeaturesComputer
+from .base_featurise import BaseFeaturesComputer
 
 class Featurizer(BaseFeaturesComputer):
     """
