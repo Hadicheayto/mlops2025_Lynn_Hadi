@@ -3,7 +3,7 @@ name = "mlproject"
 version = "0.1.0"
 description = "NYC Taxi Trip Duration - End-to-End MLOps Project"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 dependencies = [
     "fastparquet>=2025.12.0",
     "h3>=4.4.1",

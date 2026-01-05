@@ -1,0 +1,41 @@
+services:
+  ml-training:
+    build: .
+    container_name: ml-project-training
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./outputs:/app/outputs
+    command: make train
+    
+  ml-inference:
+    build: .
+    container_name: ml-project-inference
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./outputs:/app/outputs
+    command: make batch_inference
+    depends_on:
+      - ml-training
+      
+  ml-full-pipeline:
+    build: .
+    container_name: ml-project-full
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./outputs:/app/outputs
+    command: make full
+    
+  mlflow-tracking:
+    build: .
+    container_name: ml-project-mlflow
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./outputs:/app/outputs
+      - ./mlruns:/app/mlruns
+    command: make full-mlflow
+    ports:
+      - "5000:5000"
