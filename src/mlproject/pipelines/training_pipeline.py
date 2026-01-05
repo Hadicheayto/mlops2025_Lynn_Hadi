@@ -6,7 +6,6 @@ import sagemaker
 
 from sagemaker.workflow.pipeline import Pipeline
 from sagemaker.workflow.pipeline_context import PipelineSession
-from sagemaker.workflow.parameters import ParameterString
 from sagemaker.workflow.steps import ProcessingStep, TrainingStep
 from sagemaker.processing import ProcessingInput, ProcessingOutput
 
@@ -18,23 +17,10 @@ from sagemaker.sklearn.estimator import SKLearn
 # ========================
 role = os.environ["SAGEMAKER_ROLE_ARN"]
 session = PipelineSession()
-bucket = sagemaker.Session().default_bucket()
+bucket = "lynn-hadi-taxi-mlops"   # 🔴 DO NOT use default_bucket()
 
 # ========================
-# 3. Pipeline Parameters
-# ========================
-train_data_s3 = ParameterString(
-    name="TrainDataS3",
-    default_value=f"s3://{bucket}/data/train"
-)
-
-target_column = ParameterString(
-    name="TargetColumn",
-    default_value="trip_duration"
-)
-
-# ========================
-# 4. Preprocessing + Feature Engineering
+# 3. Preprocessing Step
 # ========================
 processor = SKLearnProcessor(
     framework_version="1.2-1",
@@ -45,11 +31,11 @@ processor = SKLearnProcessor(
 )
 
 preprocess_step = ProcessingStep(
-    name="PreprocessAndFeatures",
+    name="Preprocess",
     processor=processor,
     inputs=[
         ProcessingInput(
-            source=train_data_s3,
+            source=f"s3://{bucket}/data/raw/",
             destination="/opt/ml/processing/input",
         )
     ],
@@ -57,19 +43,20 @@ preprocess_step = ProcessingStep(
         ProcessingOutput(
             output_name="train",
             source="/opt/ml/processing/output",
-            destination=f"s3://{bucket}/data/processed/train",
+            destination=f"s3://{bucket}/data/processed/",
         )
     ],
     code="scripts/preprocess.py",
     job_arguments=[
-        "--input_path", "/opt/ml/processing/input/train.csv",
-        "--output_path", "/opt/ml/processing/output/train.csv",
-        "--target", target_column,
+        "--train_path", "/opt/ml/processing/input/train.csv",
+        "--test_path", "/opt/ml/processing/input/test.csv",
+        "--output_train", "/opt/ml/processing/output/train.csv",
+        "--output_test", "/opt/ml/processing/output/test.csv",
     ],
 )
 
 # ========================
-# 5. Training Step
+# 4. Training Step
 # ========================
 estimator = SKLearn(
     entry_point="scripts/train.py",
@@ -81,24 +68,21 @@ estimator = SKLearn(
 )
 
 train_step = TrainingStep(
-    name="ModelTraining",
+    name="TrainModel",
     estimator=estimator,
     inputs={
         "train": sagemaker.inputs.TrainingInput(
-            s3_data=preprocess_step.properties
-            .ProcessingOutputConfig.Outputs["train"]
-            .S3Output.S3Uri,
+            s3_data=f"s3://{bucket}/data/processed/train.csv",
             content_type="text/csv",
         )
     },
 )
 
 # ========================
-# 6. Pipeline Definition
+# 5. Pipeline Definition
 # ========================
 pipeline = Pipeline(
     name="TaxiTrainingPipeline",
-    parameters=[train_data_s3, target_column],
     steps=[preprocess_step, train_step],
     sagemaker_session=session,
 )
