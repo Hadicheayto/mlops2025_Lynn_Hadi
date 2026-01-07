@@ -65,13 +65,7 @@ class Featurizer(BaseFeaturesComputer):
 
         return 2 * R * np.arcsin(np.sqrt(a))
 
-    # -----------------------------
-    # Categorical preparation
-    # -----------------------------
-    def encode_categorical_features(self, df: pd.DataFrame) -> pd.DataFrame:
-        df = df.copy()
-        df[CATEGORICAL_COLS] = df[CATEGORICAL_COLS].astype(str)
-        return df
+  
 
     # -----------------------------
     # Drop leakage / unused columns
@@ -87,6 +81,5 @@ class Featurizer(BaseFeaturesComputer):
         df = df.copy()
         df = self.add_time_features(df)
         df = self.add_distance_features(df)
-        df = self.encode_categorical_features(df)
         df = self.drop_unused_columns(df)
         return df
