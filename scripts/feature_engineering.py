@@ -94,12 +94,12 @@ if __name__ == "__main__":
     
 
     tm = TransformersManager()
-    tm.fit_and_save(
-        X_train,
-        CATEGORICAL_COLS,
-        NUMERICAL_COLS,
-        output_dir="src/mlproject/data/transformers",
-    )
+    
+    dv_path = Path("src/mlproject/data/transformers/dict_vectorizer.pkl")
+    if not dv_path.exists():
+        tm.fit_and_save(X_train, CATEGORICAL_COLS, NUMERICAL_COLS, output_dir=dv_path.parent)
+    else:
+        print("[INFO] DictVectorizer already exists, skipping fit")
 
     print("[INFO] DictVectorizer fitted on TRAIN only and saved")
 

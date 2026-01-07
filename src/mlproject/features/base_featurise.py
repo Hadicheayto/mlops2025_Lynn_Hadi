@@ -13,9 +13,5 @@ class BaseFeaturesComputer(ABC):
         pass
 
     @abstractmethod
-    def encode_categorical_features(self, df: pd.DataFrame) -> pd.DataFrame:
-        pass
-
-    @abstractmethod
     def drop_unused_columns(self, df: pd.DataFrame) -> pd.DataFrame:
         pass
