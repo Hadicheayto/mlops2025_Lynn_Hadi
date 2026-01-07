@@ -2,6 +2,11 @@ import pandas as pd
 import numpy as np
 
 from .base_featurise import BaseFeaturesComputer
+from src.mlproject.features.schema import (
+    CATEGORICAL_COLS,
+    NUMERICAL_COLS,
+    COLUMNS_TO_DROP,
+)
 
 class Featurizer(BaseFeaturesComputer):
     """
@@ -9,23 +14,7 @@ class Featurizer(BaseFeaturesComputer):
     Creates time-based and distance-based features
     and removes leakage / unused columns.
     """
-
-    def __init__(self):
-        self.categorical_cols = [
-            "vendor_id",
-            "store_and_fwd_flag",
-        ]
-
-        self.columns_to_drop = [
-            "id",
-            "pickup_datetime",
-            "dropoff_datetime",
-            "pickup_longitude",
-            "pickup_latitude",
-            "dropoff_longitude",
-            "dropoff_latitude",
-        ]
-
+        
     # -----------------------------
     # Time-based features
     # -----------------------------
@@ -81,7 +70,7 @@ class Featurizer(BaseFeaturesComputer):
     # -----------------------------
     def encode_categorical_features(self, df: pd.DataFrame) -> pd.DataFrame:
         df = df.copy()
-        df[self.categorical_cols] = df[self.categorical_cols].astype(str)
+        df[CATEGORICAL_COLS] = df[CATEGORICAL_COLS].astype(str)
         return df
 
     # -----------------------------
@@ -89,7 +78,7 @@ class Featurizer(BaseFeaturesComputer):
     # -----------------------------
     def drop_unused_columns(self, df: pd.DataFrame) -> pd.DataFrame:
         df = df.copy()
-        return df.drop(columns=self.columns_to_drop, errors="ignore")
+        return df.drop(columns=COLUMNS_TO_DROP, errors="ignore")
 
     # -----------------------------
     # Orchestrator

@@ -2,6 +2,7 @@ from sklearn.feature_extraction import DictVectorizer
 from pathlib import Path
 import pickle
 
+
 class TransformersManager:
     """
     Handles feature encoding and persistence using DictVectorizer
@@ -45,20 +46,7 @@ class TransformersManager:
     # Transform taxi data (predefined columns)
     # -----------------------------
     def transform_taxi_data(self, df):
-        """
-        Transform taxi trip data using predefined columns.
-        """
-        categorical_cols = ["vendor_id", "store_and_fwd_flag"]
-        numerical_cols = [
-            "passenger_count",
-            "pickup_hour",
-            "pickup_dayofweek",
-            "is_weekend",
-            "trip_distance_km",
-            "manhattan_distance",
-            "is_night",
-        ]
-        return self.transform(df, categorical_cols, numerical_cols)
+        return self.transform(df, CATEGORICAL_COLS, NUMERICAL_COLS)
 
     # -----------------------------
     # Static load method
