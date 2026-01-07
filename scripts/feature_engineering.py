@@ -11,6 +11,11 @@ from src.mlproject.features.featurizer import Featurizer
 from src.mlproject.features.TransformersManager import TransformersManager
 from src.mlproject.utils.dataloader import DataLoader
 from src.mlproject.features.split import split_train_eval
+from src.mlproject.features.schema import (
+    CATEGORICAL_COLS,
+    NUMERICAL_COLS,
+    COLUMNS_TO_DROP,
+)
 
 
 if __name__ == "__main__":
@@ -88,22 +93,12 @@ if __name__ == "__main__":
     # -----------------------------
     # Fit DictVectorizer on TRAIN only
     # -----------------------------
-    categorical_cols = ["vendor_id", "store_and_fwd_flag"]
-    numerical_cols = [
-        "passenger_count",
-        "pickup_hour",
-        "pickup_dayofweek",
-        "is_weekend",
-        "trip_distance_km",
-        "manhattan_distance",
-        "is_night",
-    ]
-
+    
     tm = TransformersManager()
     tm.fit_and_save(
         X_train,
-        categorical_cols,
-        numerical_cols,
+        CATEGORICAL_COLS,
+        NUMERICAL_COLS,
         output_dir="src/mlproject/data/transformers",
     )
 
